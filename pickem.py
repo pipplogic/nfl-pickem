@@ -32,13 +32,15 @@ nfl['home'] = teams.apply(get_home_team)
 nfl['road_odds'] = lines.apply(get_road_lines)
 nfl['home_odds'] = lines.apply(get_home_lines)
 
+nfl.set_index([nfl['road'], nfl['home']], inplace=True)
+
 nfl['road_win'] = nfl['road_odds'] < nfl['home_odds']
 nfl['winning_odds'] = nfl[['road_odds', 'home_odds']].min(axis=1)
 
-nfl['confidence'] = nfl['winning_odds'].rank(ascending=False)
+nfl['confidence'] = 17 - nfl['winning_odds'].rank()
 nfl['duplicate'] = nfl['confidence'].duplicated(keep=False)
 
 nfl['winner'] = nfl['home']
 nfl.loc[nfl['road_win'], 'winner'] = nfl['road']
 
-print(nfl[['road', 'home', 'winner', 'confidence', 'duplicate']])
+print(nfl[['winner', 'winning_odds', 'confidence']])
